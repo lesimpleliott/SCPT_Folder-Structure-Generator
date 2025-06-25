@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import inquirer from "inquirer";
 import path from "path";
 
-// Function to generate the tree structure as a Markdown string
+// Fonction pour générer la structure arborescente au format Markdown
 const generateTreeStructure = (dir, indent = "") => {
   const files = fs.readdirSync(dir);
   let tree = "";
@@ -13,7 +13,6 @@ const generateTreeStructure = (dir, indent = "") => {
     const filePath = path.join(dir, file);
     const stats = fs.lstatSync(filePath);
 
-    // Ignore the contents of .git, node_modules, and ignore .DS_Store files
     if (file === ".git" || file === "node_modules" || file === ".next") {
       tree += `${indent}${prefix}${file}\n`;
       return;
@@ -36,30 +35,38 @@ const generateTreeStructure = (dir, indent = "") => {
 
 (async () => {
   try {
-    // Step 1: Prompt the user to select a folder
-    const { directory } = await inquirer.prompt([
+    // Étape 1 : Saisie et nettoyage du dossier
+    const { directory: rawDirectory } = await inquirer.prompt([
       {
         type: "input",
         name: "directory",
         message: "Please enter the path to the folder:",
-        validate: (input) =>
-          fs.existsSync(input) && fs.lstatSync(input).isDirectory()
-            ? true
-            : "The folder does not exist. Please enter a valid directory path.",
       },
     ]);
 
-    // Step 2: Generate the tree structure
+    // Nettoyage des guillemets simples ou doubles
+    const directory = rawDirectory.replace(/^["']|["']$/g, "");
+
+    // Validation du dossier (après nettoyage)
+    if (!fs.existsSync(directory) || !fs.lstatSync(directory).isDirectory()) {
+      console.error(
+        "The folder does not exist. Please enter a valid directory path."
+      );
+      process.exit(1);
+    }
+
+    // Étape 2 : Génération de l’arborescence
     const folderStructure = generateTreeStructure(directory);
 
-    // Step 3: Write to content.md in the selected folder
+    // Étape 3 : Écriture dans content.md dans le dossier sélectionné
     const outputPath = path.join(directory, "content.md");
     await fs.writeFile(outputPath, folderStructure);
     console.log(`The folder structure has been saved to: ${outputPath}`);
+
+    // Étape 4 : Affichage de l’arborescence dans la console
+    console.log("\nArborescence générée :\n");
+    console.log(folderStructure);
   } catch (error) {
     console.error("An error occurred:", error);
   }
-
-  // Step 4 : Write the tree structure to the console
-  // TO BE CODED
 })();

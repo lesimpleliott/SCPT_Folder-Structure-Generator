@@ -3,7 +3,7 @@ import fs from "fs";
 import inquirer from "inquirer";
 import path from "path";
 
-// Function to generate the tree structure as a string
+// Fonction pour générer la structure arborescente sous forme de chaîne
 const generateTreeStructure = (dir, indent = "") => {
   const files = fs.readdirSync(dir);
   let tree = "";
@@ -14,7 +14,6 @@ const generateTreeStructure = (dir, indent = "") => {
     const filePath = path.join(dir, file);
     const stats = fs.lstatSync(filePath);
 
-    // Ignore the contents of .git, node_modules, and ignore .DS_Store files
     if (file === ".git" || file === "node_modules" || file === ".next") {
       tree += `${indent}${prefix}${file}\n`;
       return;
@@ -45,16 +44,19 @@ const generateTreeStructure = (dir, indent = "") => {
     },
   ]);
 
+  // Nettoie les guillemets simples ou doubles éventuels
   const dir = answers.directory;
-  const treeStructure = generateTreeStructure(dir);
+  const cleanDir = dir.replace(/^["']|["']$/g, "");
 
-  // Print the tree structure to the terminal
+  const treeStructure = generateTreeStructure(cleanDir);
+
+  // Affiche la structure dans le terminal
   console.log(treeStructure);
 
-  // Copy the tree structure to the clipboard
+  // Copie dans le presse-papiers
   clipboardy.writeSync(treeStructure);
 
-  // Print success message
+  // Message de succès
   console.log(
     "La structure du dossier a été copiée dans le presse-papiers avec succès !"
   );
