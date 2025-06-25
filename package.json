@@ -1,12 +1,14 @@
 {
   "name": "folder-structure-generator",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "A script to generate a Markdown file listing the folder structure of a selected directory.",
   "main": "index.js",
   "scripts": {
-    "clipboard": "node tree-to-clipboard.js",
-    "clipboard-folder": "node tree-to-clipboard-folder.js",
-    "markdown": "node tree-to-markdown.js"
+    "start": "node scripts/clipboard.js",
+    "clipboard": "node scripts/clipboard.js",
+    "light": "node scripts/light.js",
+    "markdown": "node scripts/markdown.js",
+    "markdown-light": "node scripts/markdown-light.js"
   },
   "dependencies": {
     "clipboardy": "^4.0.0",
